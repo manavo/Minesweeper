@@ -122,7 +122,7 @@
                 },
                 
                 create: function() {
-                    var i,j,row,cell,bomb,index;
+                    var x,y,row,cell,bomb,index;
                     
                     this.board.empty();
                     
@@ -133,19 +133,19 @@
                     
                     this.generateBombIndices();
                     
-                    for(i=0; i<this.rowCount; i++) {
+                    for(x=0; x<this.rowCount; x++) {
                         row = $('<tr></tr>');
                         
-                        for (j=0; j<this.columnCount; j++) {
+                        for (y=0; y<this.columnCount; y++) {
                             bomb = true;
                             
-                            index = this.getIndexFromCoordinates(i, j);
+                            index = this.getIndexFromCoordinates(x, y);
                             
                             if ($.inArray(index, this.bombCells) == -1) {
                                 bomb = false;
                             }
                             
-                            cell = $('<td><button data-x="'+i+'" data-y="'+j+'"></button></td>');
+                            cell = $('<td><button data-x="'+x+'" data-y="'+y+'"></button></td>');
                             if (bomb == true) {
                                 cell.find('button').addClass('bomb');
                             }
