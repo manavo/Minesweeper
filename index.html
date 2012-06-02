@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Minesweeper</title>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+        
+        <style type="text/css">
+            * {
+                margin: 0;
+                padding: 0;
+            }
+            
+            h1 {
+                text-align: center;
+            }
+            
+            .buttons {
+                text-align: center;
+                margin: 30px auto;
+                width: 400px;
+                position: relative;
+            }
+            
+            .buttons button {
+                display: inline-block;
+                height: 50px;
+                font-size: 22px;
+                padding: 5px;
+            }
+            
+            .buttons button.validate {
+                font-size: 36px;
+            }
+            
+            .buttons button.cheat {
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+            
+            .buttons button.new {
+                position: absolute;
+                top: 0;
+                right: 0;
+            }
+            
+            #game {
+                border-collapse: collapse;
+                margin: 0 auto 30px;
+            }
+            
+            #game, #game td {
+                border: 1px solid #000;
+            }
+            
+            #game td button {
+                display: block;
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+                color: #000;
+            }
+            
+            #game td button.flag {
+                background-color: #0000CC;
+            }
+            
+            #game td button.bomb.show {
+                border: 1px solid yellow;
+            }
+            
+            #game td button.bomb.show.clicked {
+                background-color: #CC0000;
+            }
+            
+            #game td button.played {
+                background: #CCC;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Minesweeper</h1>
+        <p class="buttons">
+            <button class="cheat">Cheat</button>
+            <button class="new">New</button>
+            <button class="validate" title="Validate">☺</button>
+        </p>
+        
+        <p class="buttons">
+            <button class="save">Save</button>
+            <button class="load">Load</button>
+        </p>
+        
+        <table id="game"></table>
+        
+        <script type="text/javascript">
+            var game = {
+                board: null,
+                rowCount: 4,
+                columnCount: 4,
+                bombCount: 4,
+                bombCells: [],
+                gameOver: false,
+                gameWon: false,
+                cellsOpened: 0,
+                
+                init: function(board) {
+                    this.board = board;
+                    
+                    var self = this;
+                    this.board.find('button').live('click', function() {
+                        self.handleMove($(this));
+                    });
+                    this.board.find('button').live('contextmenu', function() {
+                        $(this).toggleClass('flag');
+                        
+                        return false;
+                    });
+                    
+                    this.create();
+                },
+                
+                create: function() {
+                    var i,j,row,cell,bomb,index;
+                    
+                    this.board.empty();
+                    
+                    this.gameOver = false;
+                    this.gameWon = false;
+                    
+                    this.cellsOpened = 0;
+                    
+                    this.generateBombIndices();
+                    
+                    for(i=0; i<this.rowCount; i++) {
+                        row = $('<tr></tr>');
+                        
+                        for (j=0; j<this.columnCount; j++) {
+                            bomb = true;
+                            
+                            index = this.getIndexFromCoordinates(i, j);
+                            
+                            if ($.inArray(index, this.bombCells) == -1) {
+                                bomb = false;
+                            }
+                            
+                            cell = $('<td><button data-x="'+i+'" data-y="'+j+'"></button></td>');
+                            if (bomb == true) {
+                                cell.find('button').addClass('bomb');
+                            }
+                            row.append(cell);
+                        }
+                        
+                        this.board.append(row);
+                    }  
+                },
+                
+                gameEnded: function() {
+                    var message = "The game has ended. ";
+                    if (this.gameWon) {
+                        message += "You won!";
+                    } else {
+                        message += "You lost...";
+                    }
+                    alert(message);
+                },
+                
+                validate: function() {
+                    if (this.gameOver == true) {
+                        this.gameEnded();
+                    } else {
+                        // this could have been an alternative to using this.cellsOpened
+                        // but it's probaly less efficient to have jQuery count on the fly,
+                        // instead of keeping track as the clicks happen
+                        // alert(this.board.find('button:disabled').length);
+
+                        if (this.getCellCount() - this.bombCells.length == this.cellsOpened) {
+                            this.gameWon = true;
+                            this.gameEnded();
+                            this.endGame();
+                        } else {
+                            this.gameEnded();
+                            this.endGame();
+                        }
+                    }
+                },
+                
+                handleMove: function(button) {
+                    var bombsAround;
+                    
+                    if (this.gameOver == true) {
+                        this.gameEnded();
+                        return;
+                    }
+                    
+                    if (button.hasClass('flag')) {
+                        return;
+                    }
+
+                    button.prop('disabled', true).addClass('played');
+                    this.cellsOpened++;
+
+                    if (this.isBomb(this.getButtonIndex(button)) == true) {
+                        button.addClass('clicked');
+                        alert('Oops! You hit a bomb, you lost!');
+                        this.endGame();
+                    } else {
+                        bombsAround = this.bombsAround(button);
+                        if (bombsAround > 0) {
+                            button.text(bombsAround);
+                        }
+                    }
+                },
+                
+                endGame: function() {
+                    this.gameOver = true;
+                    this.showBombs();
+                },
+                
+                isBomb: function(index) {
+                    if ($.inArray(index, this.bombCells) == -1) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                },
+                
+                showBombs: function() {
+                    this.board.find('.bomb').addClass('show');
+                },
+                
+                hideBombs: function() {
+                    this.board.find('.bomb').removeClass('show');
+                },
+                
+                bombsAround: function(button) {
+                    var x,y,i,bombsAroundCount;
+                    
+                    var coords = this.getButtonCoordinates(button);
+                    
+                    var checkCoords = [];
+                    
+                    for (x=coords.x-1; x<=coords.x+1; x++) {
+                        for (y=coords.y-1; y<=coords.y+1; y++) {
+                            if (x == coords.x && y == coords.y) {
+                                // the button itself we clicked on, no need to check
+                            } else {
+                                // avoid trying to check coords off the board bounds
+                                if (x >= 0 && x < this.columnCount && y >= 0 && y < this.rowCount) {
+                                    checkCoords.push({x: x, y: y});
+                                }
+                            }
+                        }
+                    }
+                    
+                    bombsAroundCount = 0;
+                    
+                    for (i in checkCoords) {
+                        var c = checkCoords[i];
+                        
+                        var index = this.getIndexFromCoordinates(c.x, c.y);
+                        
+                        if (this.isBomb(index)) {
+                            bombsAroundCount++;
+                        }
+                    }
+                    
+                    return bombsAroundCount;
+                },
+            
+                getButtonIndex: function(button) {
+                    var coords = this.getButtonCoordinates(button);
+                    return this.getIndexFromCoordinates(coords.x, coords.y);
+                },
+                
+                getButtonCoordinates: function(button) {
+                    return {x: parseInt(button.attr('data-x')), y: parseInt(button.attr('data-y'))};
+                },
+                
+                getIndexFromCoordinates: function(x, y) {
+                    return parseInt(x*this.rowCount)+parseInt(y);
+                },
+                
+                getCellCount: function() {
+                    return this.rowCount*this.columnCount;
+                },
+                
+                generateBombIndices: function() {
+                    var i;
+                    
+                    this.bombCells = [];
+                    
+                    while (this.bombCells.length < this.bombCount) {
+                        var number = Math.floor(Math.random()*this.getCellCount());
+                        
+                        if ($.inArray(number, this.bombCells) == -1) {
+                            // not found, so add it
+                            this.bombCells.push(number);
+                        }
+                    };
+                }
+            };
+            
+            function newGame() {
+                game.rowCount = 8;
+                game.columnCount = 8;
+                game.bombCount = 10;
+                
+                game.create();
+            }
+
+            $(document).ready(function() {
+                game.init($('#game'));
+                
+                newGame();
+                
+                $('.buttons button.validate').click(function() {
+                    game.validate();
+                });
+                $('.buttons button.cheat').click(function() {
+                    game.showBombs();
+                });
+                $('.buttons button.new').click(function() {
+                    newGame();
+                });
+                $('.buttons button.save').click(function() {
+                    var data = {
+                        html: game.board.html(),
+                        rowCount: game.rowCount,
+                        columnCount: game.columnCount,
+                        bombCount: game.bombCount,
+                        bombCells: game.bombCells,
+                        cellsOpened: game.cellsOpened
+                    };
+                    
+                    createCookie('game', JSON.stringify(data), 365);
+                    
+                    alert('Saved!');
+                });
+                $('.buttons button.load').click(function() {
+                    var data = $.parseJSON(readCookie('game'));
+
+                    game.gameOver = false;
+                    game.gameWon = false;
+                    game.board.html(data.html);
+                    game.rowCount = data.rowCount;
+                    game.columnCount = data.columnCount;
+                    game.bombCount = data.bombCount;
+                    game.bombCells = data.bombCells;
+                    game.cellsOpened = data.cellsOpened;
+                    
+                    alert('Loaded');
+                });
+            });
+            
+            
+            // functions from: http://www.quirksmode.org/js/cookies.html
+            function createCookie(name,value,days) {
+                if (days) {
+                    var date = new Date();
+                    date.setTime(date.getTime()+(days*24*60*60*1000));
+                    var expires = "; expires="+date.toGMTString();
+                }
+                else var expires = "";
+                document.cookie = name+"="+value+expires+"; path=/";
+            }
+            function readCookie(name) {
+                var nameEQ = name + "=";
+                var ca = document.cookie.split(';');
+                for(var i=0;i < ca.length;i++) {
+                    var c = ca[i];
+                    while (c.charAt(0)==' ') c = c.substring(1,c.length);
+                    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+                }
+                return null;
+            }
+        </script>
+    </body>
+</html>
