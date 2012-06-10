@@ -32,6 +32,17 @@
                 padding: 5px 20px;
             }
             
+            .help {
+                padding: 10px;
+                position: absolute;
+                top: 20px;
+                left: 50%;
+                margin: 0;
+                margin-left: 120px;
+                font-size: 11px;
+                display: block;
+            }
+            
             .buttons button.validate {
                 font-size: 36px;
             }
@@ -92,10 +103,61 @@
                 background: #CCC;
                 text-indent: 0;
             }
+            
+            #welcome {
+                position: absolute;
+                left: 50%;
+                width: 500px;
+                margin-left: -250px;
+                top: -400px;
+                margin-top: 0;
+                background: #FFF;
+                border-radius: 15px;
+                z-index: 2;
+            }
+            
+            #welcome .container {
+                padding: 20px;
+            }
+            
+            #welcome ol {
+                margin-top: 20px;
+                margin-bottom: 20px;
+                margin-left: 25px;
+            }
+            
+            #welcome button {
+                display: block;
+                height: 50px;
+                width: 140px;
+                font-size: 20px;
+                margin: 0 auto;
+            }
+            
+            #welcome .hint {
+                font-size: 11px;
+                color: #888;
+                margin-top: 10px;
+                text-align: center;
+            }
+            
+            #fade {
+                background: #000;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: none;
+                z-index: 1;
+            }
         </style>
     </head>
     <body>
         <h1>Minesweeper</h1>
+        
+        <button onclick="showWelcome();" class="help">Help!</button>
+        
         <p class="buttons">
             <button class="cheat">Cheat</button>
             <button class="new">New</button>
@@ -108,6 +170,22 @@
         </p>
         
         <table id="game"></table>
+        
+        <div id="welcome">
+            <div class="container">
+                <p>Welcome to Minesweeper! Here's a quick introduction:</p>
+                <ol>
+                    <li>Left click opens a tile.</li>
+                    <li>Right click flags the tile as an assumed bomb.</li>
+                    <li>Click the smiley face (validate button) once you've opened all the tiles that aren't bombs. Make sure you've opened all tiles otherwise you lose!</li>
+                    <li>Cheat on the cheat button to show where the bombs are. Click on it a second time to hide the bombs again.</li>
+                </ol>
+                <p><button type="button" onclick="dismissWelcome();">Let's play!</button></p>
+                <p class="hint">You can show this dialog again by clicking on the help button at any time.</p>
+            </div>
+        </div>
+        
+        <div id="fade" onclick="dismissWelcome();"></div>
         
         <script type="text/javascript">
             var game = {
@@ -432,7 +510,28 @@
                 game.init();
                 
                 newGame();
+                
+                if (!readCookie('welcome')) {
+                    showWelcome();
+                    createCookie('welcome', 'shown', 365*5);
+                }
             });
+            
+            function showWelcome() {
+                var fade = $('#fade');
+                
+                fade.fadeTo('fast', 0.5);
+
+                $('#welcome').animate({top: '100px'});
+            }
+            
+            function dismissWelcome() {
+                var fade = $('#fade');
+                
+                fade.fadeTo('fast', 0, function() { $(this).hide(); });
+
+                $('#welcome').animate({top: '-400px'});
+            }
             
             window.onbeforeunload = function() {
                 if (game.inProgress()) {
