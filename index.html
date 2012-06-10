@@ -268,8 +268,8 @@
                     
                     if (this.isBomb(this.getButtonIndex(button)) == true) {
                         button.addClass('clicked');
-                        alert('Oops! You hit a bomb, you lost!');
                         this.endGame();
+                        alert('Oops! You hit a bomb, you lost!');
                     } else {
                         this.enableSave();
                         
