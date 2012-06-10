@@ -181,8 +181,13 @@
                         self.bombCount = data.bombCount;
                         self.bombCells = data.bombCells;
                         self.cellsOpened = data.cellsOpened;
-
+                        
+                        self.board.find('button.bomb.show').removeClass('show');
+                        
+                        self.enableSave();
+                        self.enableCheat();
                         self.cheatButton.removeClass('on');
+                        
                         alert('Loaded');
                     });
                 },
