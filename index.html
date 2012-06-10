@@ -100,6 +100,11 @@
         <script type="text/javascript">
             var game = {
                 board: null,
+                validateButton: null,
+                cheatButton: null,
+                newButton: null,
+                saveButton: null,
+                loadButton: null,
                 rowCount: 4,
                 columnCount: 4,
                 bombCount: 4,
@@ -108,8 +113,8 @@
                 gameWon: false,
                 cellsOpened: 0,
                 
-                init: function(board) {
-                    this.board = board;
+                init: function() {
+                    this.initButtons();
                     
                     var self = this;
                     this.board.find('button').live('click', function() {
@@ -122,6 +127,48 @@
                     });
                     
                     this.create();
+                },
+                
+                initButtons: function() {
+                    var self = this;
+                    
+                    this.validateButton.click(function() {
+                        self.validate();
+                    });
+                    this.cheatButton.click(function() {
+                        self.showBombs();
+                    });
+                    this.newButton.click(function() {
+                        newGame();
+                    });
+                    this.saveButton.click(function() {
+                        var data = {
+                            html: self.board.html(),
+                            rowCount: self.rowCount,
+                            columnCount: self.columnCount,
+                            bombCount: self.bombCount,
+                            bombCells: self.bombCells,
+                            cellsOpened: self.cellsOpened
+                        };
+
+                        createCookie('game', JSON.stringify(data), 365);
+
+                        alert('Saved!');
+                    });
+                    this.loadButton.click(function() {
+                        var data = $.parseJSON(readCookie('game'));
+
+                        self.gameOver = false;
+                        self.gameWon = false;
+                        self.board.html(data.html);
+                        self.rowCount = data.rowCount;
+                        self.columnCount = data.columnCount;
+                        self.bombCount = data.bombCount;
+                        self.bombCells = data.bombCells;
+                        self.cellsOpened = data.cellsOpened;
+
+                        alert('Loaded');
+                    });
                 },
                 
                 create: function() {
@@ -316,47 +363,16 @@
             }
 
             $(document).ready(function() {
-                game.init($('#game'));
+                game.board = $('#game');
+                game.validateButton = $('.buttons button.validate');
+                game.cheatButton = $('.buttons button.cheat');
+                game.newButton = $('.buttons button.new');
+                game.saveButton = $('.buttons button.save');
+                game.loadButton = $('.buttons button.load');
+                
+                game.init();
                 
                 newGame();
-                
-                $('.buttons button.validate').click(function() {
-                    game.validate();
-                });
-                $('.buttons button.cheat').click(function() {
-                    game.showBombs();
-                });
-                $('.buttons button.new').click(function() {
-                    newGame();
-                });
-                $('.buttons button.save').click(function() {
-                    var data = {
-                        html: game.board.html(),
-                        rowCount: game.rowCount,
-                        columnCount: game.columnCount,
-                        bombCount: game.bombCount,
-                        bombCells: game.bombCells,
-                        cellsOpened: game.cellsOpened
-                    };
-                    
-                    createCookie('game', JSON.stringify(data), 365);
-                    
-                    alert('Saved!');
-                });
-                $('.buttons button.load').click(function() {
-                    var data = $.parseJSON(readCookie('game'));
-
-                    game.gameOver = false;
-                    game.gameWon = false;
-                    game.board.html(data.html);
-                    game.rowCount = data.rowCount;
-                    game.columnCount = data.columnCount;
-                    game.bombCount = data.bombCount;
-                    game.bombCells = data.bombCells;
-                    game.cellsOpened = data.cellsOpened;
-                    
-                    alert('Loaded');
-                });
             });
             
             
