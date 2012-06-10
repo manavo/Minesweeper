@@ -60,10 +60,12 @@
                 height: 50px;
                 font-size: 24px;
                 color: #000;
+                text-indent: -9999px;
             }
             
             #game td button.flag {
-                background-color: #0000CC;
+                color: #0000CC;
+                text-indent: 0;
             }
             
             #game td button.bomb.show {
@@ -76,6 +78,7 @@
             
             #game td button.played {
                 background: #CCC;
+                text-indent: 0;
             }
         </style>
     </head>
@@ -145,7 +148,7 @@
                                 bomb = false;
                             }
                             
-                            cell = $('<td><button data-x="'+x+'" data-y="'+y+'"></button></td>');
+                            cell = $('<td><button data-x="'+x+'" data-y="'+y+'">F</button></td>');
                             if (bomb == true) {
                                 cell.find('button').addClass('bomb');
                             }
@@ -201,6 +204,8 @@
                     button.prop('disabled', true).addClass('played');
                     this.cellsOpened++;
 
+                    button.text('');
+                    
                     if (this.isBomb(this.getButtonIndex(button)) == true) {
                         button.addClass('clicked');
                         alert('Oops! You hit a bomb, you lost!');
