@@ -65,15 +65,20 @@
                 font-size: 24px;
                 color: #000;
                 text-indent: -9999px;
+                background: #EEE;
+                background-repeat: none;
             }
             
             #game td button.flag {
                 color: #0000CC;
                 text-indent: 0;
+                background: #EEE url('icons/glyphicons_266_flag.png') no-repeat 50% 50%!important; /* important so it isn't overriden by the bomb icon' */
             }
             
             #game td button.bomb.show {
-                border: 1px solid yellow;
+                border: 2px solid #CC0000;
+                text-indent: 0;
+                background: #EEE url('icons/glyphicons_308_bomb.png') no-repeat 50% 50%;
             }
             
             #game td button.bomb.show.clicked {
@@ -200,7 +205,7 @@
                                 bomb = false;
                             }
                             
-                            cell = $('<td><button data-x="'+x+'" data-y="'+y+'">F</button></td>');
+                            cell = $('<td><button data-x="'+x+'" data-y="'+y+'"></button></td>');
                             if (bomb == true) {
                                 cell.find('button').addClass('bomb');
                             }
