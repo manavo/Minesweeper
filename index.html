@@ -39,6 +39,10 @@
                 left: 0;
             }
             
+            .buttons button.cheat.on {
+                color: #CC0000;
+            }
+            
             .buttons button.new {
                 position: absolute;
                 top: 0;
@@ -136,7 +140,7 @@
                         self.validate();
                     });
                     this.cheatButton.click(function() {
-                        self.showBombs();
+                        self.toggleCheat();
                     });
                     this.newButton.click(function() {
                         newGame();
@@ -167,6 +171,7 @@
                         self.bombCells = data.bombCells;
                         self.cellsOpened = data.cellsOpened;
 
+                        self.cheatButton.removeClass('on');
                         alert('Loaded');
                     });
                 },
@@ -207,6 +212,7 @@
                     
                     this.disableSave();
                     this.enableCheat();
+                    this.cheatButton.removeClass('on');
                 },
                 
                 inProgress: function() {
@@ -308,6 +314,12 @@
                 
                 showBombs: function() {
                     this.board.find('.bomb').addClass('show');
+                },
+                
+                toggleCheat: function() {
+                    this.board.find('.bomb').toggleClass('show');
+                    
+                    this.cheatButton.toggleClass('on');
                 },
                 
                 hideBombs: function() {
