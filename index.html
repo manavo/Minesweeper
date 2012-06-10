@@ -204,6 +204,13 @@
                         
                         this.board.append(row);
                     }  
+                    
+                    this.disableSave();
+                    this.enableCheat();
+                },
+                
+                inProgress: function() {
+                    return (this.cellsOpened > 0 && this.gameOver == false);
                 },
                 
                 gameEnded: function() {
@@ -258,6 +265,8 @@
                         alert('Oops! You hit a bomb, you lost!');
                         this.endGame();
                     } else {
+                        this.enableSave();
+                        
                         bombsAround = this.bombsAround(button);
                         if (bombsAround > 0) {
                             button.text(bombsAround);
@@ -265,7 +274,26 @@
                     }
                 },
                 
+                enableCheat: function() {
+                    this.cheatButton.prop('disabled', false);
+                },
+                
+                disableCheat: function() {
+                    this.cheatButton.prop('disabled', true);
+                },
+                
+                enableSave: function() {
+                    this.saveButton.prop('disabled', false);
+                },
+                
+                disableSave: function() {
+                    this.saveButton.prop('disabled', true);
+                },
+                
                 endGame: function() {
+                    this.disableSave();
+                    this.disableCheat();
+                    
                     this.gameOver = true;
                     this.showBombs();
                 },
@@ -375,6 +403,11 @@
                 newGame();
             });
             
+            window.onbeforeunload = function() {
+                if (game.inProgress()) {
+                    return "Are you sure you want to quit this game?";
+                }
+            };
             
             // functions from: http://www.quirksmode.org/js/cookies.html
             function createCookie(name,value,days) {
