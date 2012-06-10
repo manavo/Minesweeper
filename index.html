@@ -253,28 +253,41 @@
 
                         createCookie('game', JSON.stringify(data), 365);
 
+                        self.enableLoad();
+
                         alert('Saved!');
                     });
                     this.loadButton.click(function() {
-                        var data = $.parseJSON(readCookie('game'));
+                        var gameData = readCookie('game');
+                        if (gameData) {
+                            var data = $.parseJSON(gameData);
 
-                        self.gameOver = false;
-                        self.gameWon = false;
-                        self.board.html(data.html);
-                        self.rowCount = data.rowCount;
-                        self.columnCount = data.columnCount;
-                        self.bombCount = data.bombCount;
-                        self.bombCells = data.bombCells;
-                        self.cellsOpened = data.cellsOpened;
-                        
-                        self.board.find('button.bomb.show').removeClass('show');
-                        
-                        self.enableSave();
-                        self.enableCheat();
-                        self.cheatButton.removeClass('on');
-                        
-                        alert('Loaded');
+                            self.gameOver = false;
+                            self.gameWon = false;
+                            self.board.html(data.html);
+                            self.rowCount = data.rowCount;
+                            self.columnCount = data.columnCount;
+                            self.bombCount = data.bombCount;
+                            self.bombCells = data.bombCells;
+                            self.cellsOpened = data.cellsOpened;
+
+                            self.board.find('button.bomb.show').removeClass('show');
+
+                            self.enableSave();
+                            self.enableCheat();
+                            self.cheatButton.removeClass('on');
+
+                            alert('Loaded');
+                        } else {
+                            alert('Failed to load the game');
+                        }
                     });
+                    
+                    if (readCookie('game')) {
+                        this.enableLoad();
+                    } else {
+                        this.disableLoad();
+                    }
                 },
                 
                 create: function() {
@@ -395,6 +408,14 @@
                 
                 disableSave: function() {
                     this.saveButton.prop('disabled', true);
+                },
+                
+                enableLoad: function() {
+                    this.loadButton.prop('disabled', false);
+                },
+                
+                disableLoad: function() {
+                    this.loadButton.prop('disabled', true);
                 },
                 
                 endGame: function() {
