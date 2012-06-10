@@ -211,7 +211,11 @@
                         self.handleMove($(this));
                     });
                     this.board.find('button').live('contextmenu', function() {
-                        $(this).toggleClass('flag');
+                        if (self.gameOver == false) {
+                            $(this).toggleClass('flag');
+                        } else {
+                            self.gameEnded();
+                        }
                         
                         return false;
                     });
