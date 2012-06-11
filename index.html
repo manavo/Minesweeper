@@ -553,11 +553,17 @@
             function dismissWelcome() {
                 var fade = $('#fade');
                 
-                fade.fadeTo('fast', 0, function() { $(this).hide(); });
+                if (fade.is(':visible')) {
+                    fade.fadeTo('fast', 0, function() { $(this).hide(); });
 
-                $('#welcome').animate({top: '-400px'});
+                    $('#welcome').animate({top: '-400px'});
+                }
             }
             
+            $(document).keyup(function(e) {
+                if (e.keyCode == 27) { dismissWelcome(); }   // esc
+            });
+
             window.onbeforeunload = function() {
                 if (game.inProgress()) {
                     return "Are you sure you want to quit this game?";
