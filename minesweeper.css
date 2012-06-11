@@ -1,0 +1,145 @@
+* {
+    margin: 0;
+    padding: 0;
+    /* Helvetica Neue */
+    font-family: "Helvetica Neue", sans-serif;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.buttons {
+    text-align: center;
+    margin: 30px auto;
+    width: 400px;
+    position: relative;
+}
+
+.buttons button {
+    display: inline-block;
+    height: 50px;
+    font-size: 22px;
+    padding: 5px 20px;
+}
+
+.help {
+    padding: 10px;
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    margin: 0;
+    margin-left: 120px;
+    font-size: 11px;
+    display: block;
+}
+
+.buttons button.validate {
+    font-size: 36px;
+}
+
+.buttons button.cheat {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.buttons button.cheat.on {
+    color: #CC0000;
+}
+
+.buttons button.new {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+#game {
+    border-collapse: collapse;
+    margin: 0 auto 30px;
+}
+
+#game, #game td {
+    border: 1px solid #000;
+}
+
+#game td button {
+    display: block;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    color: #000;
+    text-indent: -9999px;
+    background: #EEE;
+    background-repeat: none;
+}
+
+#game td button.flag {
+    color: #0000CC;
+    text-indent: 0;
+    background: #EEE url('icons/glyphicons_266_flag.png') no-repeat 50% 50%!important; /* important so it isn't overriden by the bomb icon' */
+}
+
+#game td button.bomb.show {
+    border: 2px solid #CC0000;
+    text-indent: 0;
+    background: #EEE url('icons/glyphicons_308_bomb.png') no-repeat 50% 50%;
+}
+
+#game td button.bomb.show.clicked {
+    background-color: #CC0000;
+}
+
+#game td button.played {
+    background: #CCC;
+    text-indent: 0;
+}
+
+#welcome {
+    position: absolute;
+    left: 50%;
+    width: 500px;
+    margin-left: -250px;
+    top: -400px;
+    margin-top: 0;
+    background: #FFF;
+    border-radius: 15px;
+    z-index: 2;
+}
+
+#welcome .container {
+    padding: 20px;
+}
+
+#welcome ol {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: 25px;
+}
+
+#welcome button {
+    display: block;
+    height: 50px;
+    width: 140px;
+    font-size: 20px;
+    margin: 0 auto;
+}
+
+#welcome .hint {
+    font-size: 11px;
+    color: #888;
+    margin-top: 10px;
+    text-align: center;
+}
+
+#fade {
+    background: #000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    z-index: 1;
+}
